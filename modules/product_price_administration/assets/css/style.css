@@ -1,0 +1,55 @@
+.import_input_button{
+	color: #2271b1;
+    border-color: #2271b1;
+    background: #f6f7f7;
+    padding: 4px 6px;
+    border-radius: 3px;
+    text-transform: capitalize;
+}
+.import_input_button:hover{
+	color: #244d6f;
+    border-color: #244d6f;
+    background: transparent;
+}
+
+.custom-file-input{
+	width: 400px;
+}
+
+.custom-file-input::-webkit-file-upload-button {
+  visibility: hidden;
+}
+.custom-file-input::before {
+  content: 'Select some files';
+  display: inline-block;
+  background: #f6f7f7;
+  border: 1px solid #2271b1;
+  border-radius: 3px;
+  padding: 4px 6px;
+  outline: none;
+  white-space: nowrap;
+  -webkit-user-select: none;
+  cursor: pointer;
+  color: #2271b1;
+}
+.custom-file-input:hover::before {
+	color: #244d6f;
+    border-color: #244d6f;
+    background: transparent;
+}
+.custom-file-input:active::before {
+  background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+}
+
+.easy-seo-notice-style{
+	font-size: 40px;
+    font-weight: 300;
+    text-align: center;
+	font-weight: bold;
+}
+.notice-style-red{
+	color: red;
+}
+.notice-style-green{
+	color: green;
+}
