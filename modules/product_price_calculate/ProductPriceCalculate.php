@@ -7,7 +7,6 @@ class ProductPriceCalculate
   protected $wpdb;
   protected $product_id;
   protected $product;
-  protected $post;
   public function __construct()
   {
     global $wpdb, $post, $product;
@@ -20,12 +19,14 @@ class ProductPriceCalculate
 
     add_filter('woocommerce_product_data_tabs', [$this, 'importTabCal']);
     add_action('woocommerce_product_data_panels', [$this, 'importTabCalContent']);
+    add_action('post_edit_form_tag', [$this, 'postEditFormTag']);
     add_filter('woocommerce_get_price_html',[$this, 'customProductPriceHtml'], 10, 2);
   //  add_action('woocommerce_after_add_to_cart_button', [$this, 'productDimensionsForm'], 10);
+  add_action('wp_enqueue_scripts', [$this, 'enqueueScripts']);
     add_action( 'woocommerce_single_product_summary', [$this,'custom_single_product_summary'], 2 );
-    add_action('wp_enqueue_scripts', [$this, 'enqueueScripts']);
+
     add_filter('woocommerce_add_cart_item_data', [$this, 'addCartItemCustomData'], 10, 2);
-  //  add_action('woocommerce_before_calculate_totals', [$this, 'changeCartItemPrice']);
+   add_action('woocommerce_before_calculate_totals', [$this, 'changeCartItemPrice']);
     if(!empty($_POST['submit1'])) $this->insert_or_update($_POST,$this->product_id);
 
   }
@@ -43,6 +44,10 @@ class ProductPriceCalculate
 
 		return $tabs;
 	}
+  public function postEditFormTag()
+  {
+    echo ' enctype="multipart/form-data"';
+  }
   public function importTabCalContent()
   {
     global $post;
@@ -146,23 +151,26 @@ public function enqueueScripts($hook_suffix)
 
 public function addCartItemCustomData($cart_item_meta, $product_id)
 {
+
+
   global $woocommerce;
 
-  $cart_item_meta['price'] = $_COOKIE['price'];
-  var_dump($_COOKIE['price']);
+  $cart_item_meta['width'] = $_POST['width'];
+  $cart_item_meta['height'] = $_POST['height'];
+  $cart_item_meta['dimensions'] = $_POST['unit'];
+ var_dump($cart_item_meta);
 
   return $cart_item_meta;
 }
 
 public function changeCartItemPrice($cart_obj)
 {
+
     foreach($cart_obj->cart_contents as $key => $value) {
     $product_id = $value['data']->get_id();
-    $width = $value['width'];
-    $height = $value['height'];
-    $dimensions = $value['dimensions'];
-
-    $new_price = $this->calculatePriceByDimentions($product_id, $width, $height, $dimensions);
+    var_dump($product_id);
+    $explode = explode(" ", $_COOKIE['price']);
+    $new_price = $explode[1];
     $value['data']->set_price($new_price);
   }
 }

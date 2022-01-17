@@ -1,5 +1,5 @@
 <div id="price_calculation_form" class="panel woocommerce_options_panel hidden">
-  <form action="" method="post" id="import_form" class="import_form" enctype="multipart/form-data">
+
     <label class="customized-labels" for="">Ivedimo vienetas</label>
     <select name="unit" id="unit">
   <option value="mm">mm</option>
@@ -20,17 +20,18 @@
     <input type="hidden" name="maxheight" class="front_maxheight" value="<?php echo get_post_meta($product_id, '_maxheight')[0] ?>">
 
     <input type="hidden" name="product_id" class="front_product_id" value="<?php echo $product_id; ?>">
-		<input type="number" class="ppc_width" id="upload" name="width" class="custom-file-input"  pattern="[0-9]+([\.,][0-9]+)?"  step="0.01" required >
+		<input type="number" class="ppc_width"  name="width" pattern="[0-9]+([\.,][0-9]+)?"  step="0.01" required >
 	  <br>
     <br>
     <label class="customized-labels" for="">Height:</label>
-    <input type="number" class="ppc_height" id="upload" name="height" class="custom-file-input"  pattern="[0-9]+([\.,][0-9]+)?" step="0.01" required>
+    <input type="number" class="ppc_height" name="height" pattern="[0-9]+([\.,][0-9]+)?" step="0.01" required>
     <br>
     <br>
 
 
     <button class="button-secondary" onclick="priceCalculate();return false;">Calculate</button>
-	</form>
+
+
   <div id="ppc_after"></div>
 </div>
 

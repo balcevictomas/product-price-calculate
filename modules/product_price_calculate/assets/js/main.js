@@ -23,6 +23,7 @@ function priceCalculate()
     price: price
 	}, function(result) {
 		jQuery(".woocommerce-Price-amount").html(result);
+
 		jQuery("#wppi_price_from").hide();
     //jQuery('#ppc_after').html('');
 	});
