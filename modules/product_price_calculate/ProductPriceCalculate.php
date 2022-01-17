@@ -24,6 +24,8 @@ class ProductPriceCalculate
   //  add_action('woocommerce_after_add_to_cart_button', [$this, 'productDimensionsForm'], 10);
     add_action( 'woocommerce_single_product_summary', [$this,'custom_single_product_summary'], 2 );
     add_action('wp_enqueue_scripts', [$this, 'enqueueScripts']);
+    add_filter('woocommerce_add_cart_item_data', [$this, 'addCartItemCustomData'], 10, 2);
+  //  add_action('woocommerce_before_calculate_totals', [$this, 'changeCartItemPrice']);
     if(!empty($_POST['submit1'])) $this->insert_or_update($_POST,$this->product_id);
 
   }
@@ -142,6 +144,27 @@ public function enqueueScripts($hook_suffix)
   wp_enqueue_script('ppimain', EZ_PLUGIN_URL.'modules/product_price_calculate/assets/js/main.js', array('jquery'));
 }
 
+public function addCartItemCustomData($cart_item_meta, $product_id)
+{
+  global $woocommerce;
 
+  $cart_item_meta['price'] = $_COOKIE['price'];
+  var_dump($_COOKIE['price']);
+
+  return $cart_item_meta;
+}
+
+public function changeCartItemPrice($cart_obj)
+{
+    foreach($cart_obj->cart_contents as $key => $value) {
+    $product_id = $value['data']->get_id();
+    $width = $value['width'];
+    $height = $value['height'];
+    $dimensions = $value['dimensions'];
+
+    $new_price = $this->calculatePriceByDimentions($product_id, $width, $height, $dimensions);
+    $value['data']->set_price($new_price);
+  }
+}
 
 }

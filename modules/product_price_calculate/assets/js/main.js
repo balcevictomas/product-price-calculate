@@ -1,5 +1,6 @@
 function priceCalculate()
 {
+  var product_id = jQuery('.front_product_id').val();
   var ppc_width = jQuery('.ppc_width').val();
 	var ppc_height = jQuery('.ppc_height').val();
   var priceper = jQuery('.front_priceper').val();
@@ -18,7 +19,8 @@ function priceCalculate()
     width_min: width_min,
     width_max: width_max,
     height_min: height_min,
-    height_max: height_max
+    height_max: height_max,
+    price: price
 	}, function(result) {
 		jQuery(".woocommerce-Price-amount").html(result);
 		jQuery("#wppi_price_from").hide();
@@ -57,8 +59,25 @@ else if (!ppc_height) {
 
 else {
   var price = ppc_width * ppc_height * priceper;
+
   jQuery('#ppc_after').html('<span class="ppc_after_info">'+price+'€</span>');
+
+  createCookie("price",product_id, price, "10");
+
+
 }
 
 
+}
+function createCookie(name,id, value, days) {
+  var expires;
+  if (days) {
+    var date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    expires = "; expires=" + date.toGMTString();
+  }
+  else {
+    expires = "";
+  }
+  document.cookie = escape(name) + "=" + escape(id) + " " + escape(value) + expires + "; path=/";
 }
