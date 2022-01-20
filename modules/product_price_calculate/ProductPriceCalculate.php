@@ -23,8 +23,8 @@ class ProductPriceCalculate
     add_filter('woocommerce_get_price_html',[$this, 'customProductPriceHtml'], 10, 2);
   //  add_action('woocommerce_after_add_to_cart_button', [$this, 'productDimensionsForm'], 10);
   add_action('wp_enqueue_scripts', [$this, 'enqueueScripts']);
-    add_action( 'woocommerce_single_product_summary', [$this,'custom_single_product_summary'], 2 );
-
+  //  add_action( 'woocommerce_single_product_summary', [$this,'custom_single_product_summary'], 2 );
+add_action('woocommerce_after_add_to_cart_button', [$this, 'calculation_form'], 10);
     add_filter('woocommerce_add_cart_item_data', [$this, 'addCartItemCustomData'], 10, 2);
    add_action('woocommerce_before_calculate_totals', [$this, 'changeCartItemPrice']);
     if(!empty($_POST['submit1'])) $this->insert_or_update($_POST,$this->product_id);
@@ -111,23 +111,10 @@ public function customProductPriceHtml()
 {
   global $product, $wpdb;
   $product_id = $product->get_id();
-  //$query1 = 'SELECT meta_value from wp_postmeta where meta_key="_priceper" and post_id='.$product_id.'';
-  //$query2 = 'SELECT meta_value from wp_postmeta where meta_key="_pricepermeasure" and post_id='.$product_id.'';
+
   $priceper = get_post_meta($product_id, '_priceper')[0];
   $pricepermeasure = get_post_meta($product_id, '_pricepermeasure')[0];
 
-/*  $result1 = $wpdb ->get_results($query1);
-  $result2 = $wpdb ->get_results($query2);
-  foreach ( $result1 as $page )
-{
-    $priceper = $page->meta_value;
-
-}
-foreach ( $result2 as $page )
-{
-    $pricepermeasure = $page->meta_value;
-
-}*/
 $pricepermeasure = str_replace('2', '<sup>2</sup>', $pricepermeasure);
   echo 'Price per ' .$pricepermeasure. ': '.$priceper.'&euro;';
 }
@@ -152,12 +139,13 @@ public function enqueueScripts($hook_suffix)
 public function addCartItemCustomData($cart_item_meta, $product_id)
 {
 
-
   global $woocommerce;
 
   $cart_item_meta['width'] = $_POST['width'];
   $cart_item_meta['height'] = $_POST['height'];
-  $cart_item_meta['dimensions'] = $_POST['unit'];
+  $cart_item_meta['unit'] = $_POST['unit'];
+  $cart_item_meta['pricepermeasure'] = $_POST['pricepermeasure'];
+  $cart_item_meta['priceper'] = $_POST['priceper'];
  var_dump($cart_item_meta);
 
   return $cart_item_meta;
@@ -168,11 +156,40 @@ public function changeCartItemPrice($cart_obj)
 
     foreach($cart_obj->cart_contents as $key => $value) {
     $product_id = $value['data']->get_id();
-    var_dump($product_id);
-    $explode = explode(" ", $_COOKIE['price']);
-    $new_price = $explode[1];
+    $product_id = $value['data']->get_id();
+    $width = $value['width'];
+    $height = $value['height'];
+    $unit = $value['unit'];
+    $pricepermeasure = $value['pricepermeasure'];
+    $priceper = $value['priceper'];
+
+
+    $new_price = $this->calculatePriceByUnit($product_id, $width, $height, $unit, $pricepermeasure, $priceper);
     $value['data']->set_price($new_price);
   }
+}
+public function calculatePriceByUnit($product_id, $width, $height, $unit, $pricepermeasure, $priceper)
+{
+  $product_id = intval($product_id);
+  $width = intval($width);
+  $height = intval($height);
+  $priceper = intval($priceper);
+  $unit = sanitize_text_field($unit);
+  $pricepermeasure = sanitize_text_field($pricepermeasure);
+  if ($pricepermeasure == 'mm2' && $unit =='cm' ) {
+    $width *= 10;
+    $height *= 10;
+  }
+  else if ($pricepermeasure == 'mm2' && $unit == 'm')
+  {
+    $width *= 1000;
+    $height *= 1000;
+  }
+
+  $new_price = $width * $height * $priceper;
+
+  return $new_price;
+
 }
 
 }

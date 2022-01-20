@@ -34,7 +34,12 @@
 
   <div id="ppc_after"></div>
 </div>
+<?php
 
+    //Or:
+    foreach ($_POST as $key => $value)
+        echo $key.'='.$value.'<br />';
+?>
 <style>
 .customized-labels {
   margin:0!important;
